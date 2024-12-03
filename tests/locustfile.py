@@ -8,7 +8,6 @@ from utils.test_utils import TestUtils
 class PerformanceTest(HttpUser):
     wait_time = between(1, 2)
     host = base_url
-    # https://apilayer.net/api
     def on_start(self):
         self.api = NumVerifyAPI(base_url, access_key)
         self.phoneNumber = TestUtils.generate_phone_number()
