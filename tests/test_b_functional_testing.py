@@ -11,8 +11,8 @@ callback = 'CALLBACK_FUNCTION'
 
 def test_missing_access_key():
     number = TestUtils.generate_phone_number()
-
     num_verify_api = NumVerifyAPI(base_url, '')
+
     response = num_verify_api.validate_phone_number(number)
     assert_status_code(response, 200)
     assert response.json()['success'] == False
@@ -50,6 +50,23 @@ def test_invalid_phone_number_with_incorrect_length():
     assert response.json()['location'] == ''
     assert response.json()['carrier'] == ''
     assert response.json()['line_type'] is None
+
+
+def test_phone_number_containing_trailing_and_leading_whitespace():
+    number = f'   {TestUtils.generate_phone_number()}  '
+    response = num_verify_api.validate_phone_number(number)
+
+    assert_status_code(response, 200)
+    assert response.json()['valid'] == True
+    assert response.json()['number'] == number.strip()
+    assert response.json()['international_format'] is not None
+    assert response.json()['local_format'] is not None
+    assert response.json()['country_prefix'] is not None
+    assert response.json()['country_code'] is not None
+    assert response.json()['country_name'] is not None
+    assert response.json()['location'] is not None
+    assert response.json()['carrier'] is not None
+    assert response.json()['line_type'] is not None
 
 
 def test_invalid_phone_number_with_invalid_format():
@@ -110,6 +127,25 @@ def test_empty_phone_number():
     assert response.json()['error']['type'] == 'no_phone_number_provided'
     assert response.json()['error']['info'] == 'Please specify a phone number. [Example: 14158586273]'
 
+
+def test_trailing_and_leading_whitespace_in_country_code():
+    phone_number = TestUtils.generate_phone_number_with_code()
+    country_code = f'    {phone_number['country_code']}    '
+    number = phone_number['phone']
+    response = num_verify_api.validate_phone_number(number, callback, country_code)
+
+    response_data = TestUtils.load_callback_response(response)
+    assert_status_code(response, 200)
+    assert response_data['valid'] == True
+    assert response_data['number'] is not None
+    assert response_data['international_format'] is not None
+    assert response_data['local_format'] is not None
+    assert response_data['country_prefix'] is not None
+    assert response_data['country_code'] is not None
+    assert response_data['country_name'] is not None
+    assert response_data['location'] is not None
+    assert response_data['carrier'] is not None
+    assert response_data['line_type'] is not None
 
 def test_validate_phone_number():
     number = TestUtils.generate_phone_number()
