@@ -1,45 +1,53 @@
 # NumVerify API Test Documentation
 
-This project tests the NumVerify API (a public API that helps you validate phone number
+This project is designed to tests the **NumVerify API**, a public API that allows you to validate phone numbers at the point of entry into your system.   
 
-at the point of entry into your system).   
+at the point of entry into your system).
+
+---
 
 ### System Requirements
-  - Python: 3.5 or latest
-  - IDE (VSCode or Pycharm)
-  - Git for version control
-  - Internet connection to make request to the NumVerify API endpoint.
+  - **Python**: 3.5 or latest
+  - **Code Editor or IDE**: VSCode or Pycharm
+  - **Version Control**: Git
+  - **Internet Connection**: to make request to the NumVerify API endpoint.
+
+---
   
-### Clone the repository
-  - Type the following command on your system terminal to clone the repo:
+### Clone the Repository
+  - To get started, clone the repository by running the following terminal in your terminal: 
   ```bash
    git clone https://github.com/shepherd-001/num-verify-api-test
+   cd <repo-directory>  #Navigate to the project directory
   ```
-Enter the project directory
+---
+  
+### Install Dependencies
+  -  Install the required dependencies by running:
   ```bash
-   cd <repo-directory>
+    pip install -r requirements.txt
   ```
+
+---
+
+### Set Up Environment Variables
+  - Create a .env file in the root directory of the project.
+  - Add the NumVerify base URL as a variable in the .env file.
+  - Obtain your access key from the [NumVerify API site.](https://numverify.com/)
+  - Add the access key as a variable in the .env file. 
   
-### Install dependencies
-  - Run the following command to install the dependencies required for the project:
-  ```bash
-   npm install -r requirements.txt
-  ```
-  
-### Set up environment variables
-  - Create a .env file in the project root directory.
-  - Add the NumVerify base url as a variable
-  - Click [here](https://numverify.com/) to get an access key from the NumVerify API site.
-  - Add the access_key as a variable in the .env file. 
-  
+
+---
+
 ### To run the test,
-  - Run the following command on your terminal: 
+To execute the tests, use the following command: 
   ```bash
     python -m python -m pytest ./tests/
   ```
-  - The above command will execute all the tests in the project as predefined without 
-generating a test report. To generate a test report, run: 
+  This will run all predefined tests in the project.
+
+To generate a test report, use the following command instead:
   ```bash
-   python -m python -m pytest ./tests/
+   python -m python -m pytest ./tests/ --html-report.html
   ```
-  - The result of the test can be found in report.html file.
+  The result will be saved in the report.html file.
