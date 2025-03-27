@@ -2,21 +2,29 @@ import requests
 
 
 #
+# import json
+# from typing import Optional, Dict, Any
+#
+# import requests
+# from config.projectConfiguration import logger, base_url
+#
+#
 # class APIError(Exception):
 #     """Custom exception for API request errors."""
 #     pass
 #
 #
-# class BaseAPI:
+# class APIClient:
 #     def __init__(self, session: Optional[requests.Session] = None):
 #         self.base_url = base_url
 #         self.session = session or requests.Session()
 #         self.default_headers = {'Content-Type': "application/json"}
 #
-#     def _request(
+#     def _send_request(
 #             self, method: str, endpoint: str,
 #             payload: Optional[Dict[str, Any]] = None,
 #             params: Optional[Dict[str, Any]] = None,
+#             auth_token: Optional[str] = None,
 #             extra_headers: Optional[Dict[str, str]] = None
 #     ) -> requests.Response:
 #         """
@@ -27,22 +35,22 @@ import requests
 #         :param payload: JSON payload for request body.
 #         :param params: Query parameters for the request(dict).
 #         :param extra_headers: Additional headers to include in the request(dict).
+#         :param auth_token: Authentication token passed at runtime.
 #         :return: Response object.
 #         :raises APIError: If a network error occurs or the request fails.
 #         """
 #         headers = self.default_headers.copy()
 #         if extra_headers:
 #             headers.update(extra_headers)
+#         if auth_token:
+#             headers["Authorization"] = f"Bearer {auth_token}"
 #
-#         url = f"{self.base_url}{endpoint}"
+#         url = f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
+#
+#         # url = f"{self.base_url}{endpoint}"
 #
 #         try:
-#             response = self.session.request(
-#                 method, url,
-#                 json=payload,
-#                 params=params,
-#                 headers=headers
-#             )
+#             response = self.session.request(method, url, json=payload, params=params, headers=headers)
 #             self._log_response(response)
 #             return response
 #         except requests.RequestException as error:
@@ -53,13 +61,29 @@ import requests
 #         logger.error(f"Error: {error}")
 #
 #     def _log_response(self, response: requests.Response) -> None:
-#         logger.debug(f"""
+#         logger.info(f"""
+#         Request URL: {response.url}
+#         Status Code: {response.status_code} | HTTP Method: {response.request.method}
+#         Response: {json.dumps(response.json(), indent=4)}
+#          """)
 #
-#         HTTP Status Code: {response.status_code}
-#         HTTP Method: {response.request.method}
-#         URL: {response.url}
-#         Response: {response.text}
-#         """)
+#
+#     def _get(self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#         return self._send_request('GET', endpoint, params=params, **kwargs)
+#
+#     def _post(self, endpoint: str, payload: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#         return self._send_request('POST', endpoint, payload=payload, **kwargs)
+#
+#     def _put(self, endpoint: str, payload: Optional[Dict[str, Any]] = None,
+#             params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#         return self._send_request('PUT', endpoint, payload=payload, params= params, **kwargs)
+#
+#     def _patch(self, endpoint: str, payload: Optional[Dict[str, Any]] = None,
+#             params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#         return self._send_request('PATCH', endpoint, payload=payload, params= params, **kwargs)
+#
+#     def _delete(self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#         return self._send_request('DELETE', endpoint, params=params, **kwargs)
 
 
 class NumVerifyAPI:
