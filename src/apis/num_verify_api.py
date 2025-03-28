@@ -2,8 +2,9 @@ import requests
 
 
 #
-# import json
 # from typing import Optional, Dict, Any
+# from urllib.parse import urljoin
+#
 #
 # import requests
 # from config.projectConfiguration import logger, base_url
@@ -15,10 +16,20 @@ import requests
 #
 #
 # class APIClient:
-#     def __init__(self, session: Optional[requests.Session] = None):
-#         self.base_url = base_url
+#     def __init__(self, auth_token: Optional[str] = None, session: Optional[requests.Session] = None):
+#
+#         self.base_url = base_url.rstrip("/")
+#         self.auth_token = auth_token
 #         self.session = session or requests.Session()
 #         self.default_headers = {'Content-Type': "application/json"}
+#
+#         if self.auth_token:
+#             self.default_headers["Authorization"] = f"Bearer {self.auth_token}"
+#
+#     def set_auth_token(self, auth_token: str) -> None:
+#         """Updates the authentication token dynamically."""
+#         self.auth_token = auth_token
+#         self.default_headers["Authorization"] = f"Bearer {auth_token}"
 #
 #     def _send_request(
 #             self, method: str, endpoint: str,
@@ -39,15 +50,13 @@ import requests
 #         :return: Response object.
 #         :raises APIError: If a network error occurs or the request fails.
 #         """
-#         headers = self.default_headers.copy()
-#         if extra_headers:
-#             headers.update(extra_headers)
-#         if auth_token:
-#             headers["Authorization"] = f"Bearer {auth_token}"
+#         headers = {**self.default_headers, **(extra_headers or {})}
 #
-#         url = f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
+#         token = auth_token or self.auth_token
+#         if token:
+#             headers["Authorization"] = f"Bearer {token}"
 #
-#         # url = f"{self.base_url}{endpoint}"
+#         url = urljoin(self.base_url + "/", endpoint.lstrip("/"))
 #
 #         try:
 #             response = self.session.request(method, url, json=payload, params=params, headers=headers)
@@ -64,25 +73,22 @@ import requests
 #         logger.info(f"""
 #         Request URL: {response.url}
 #         Status Code: {response.status_code} | HTTP Method: {response.request.method}
-#         Response: {json.dumps(response.json(), indent=4)}
+#         Response: {response.text}
 #          """)
 #
-#
-#     def _get(self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#     def get(self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
 #         return self._send_request('GET', endpoint, params=params, **kwargs)
 #
-#     def _post(self, endpoint: str, payload: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#     def post(self, endpoint: str, payload: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
 #         return self._send_request('POST', endpoint, payload=payload, **kwargs)
 #
-#     def _put(self, endpoint: str, payload: Optional[Dict[str, Any]] = None,
-#             params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
-#         return self._send_request('PUT', endpoint, payload=payload, params= params, **kwargs)
+#     def put(self, endpoint: str, payload: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#         return self._send_request('PUT', endpoint, payload=payload, **kwargs)
 #
-#     def _patch(self, endpoint: str, payload: Optional[Dict[str, Any]] = None,
-#             params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
-#         return self._send_request('PATCH', endpoint, payload=payload, params= params, **kwargs)
+#     def patch(self, endpoint: str, payload: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#         return self._send_request('PATCH', endpoint, payload=payload, **kwargs)
 #
-#     def _delete(self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
+#     def delete(self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> requests.Response:
 #         return self._send_request('DELETE', endpoint, params=params, **kwargs)
 
 
