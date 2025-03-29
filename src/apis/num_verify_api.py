@@ -92,6 +92,26 @@ import requests
 #         return self._send_request('DELETE', endpoint, params=params, **kwargs)
 
 
+# static class data factory
+# class OrganizationDataFactory:
+# @staticmethod
+# def generate_organization_data(overrides: Dict[str, Any] = None) -> Dict[str, Any]:
+#     organization_data = {
+#         "name": fake.company(),
+#         "organizationLogo": "",
+#         "website": TestUtils.generate_website(),
+#         "industry": fake.company(),
+#         "siteName": TestUtils.generate_site_name()
+#     }
+#     if overrides:
+#         organization_data.update(overrides)
+#     return organization_data
+
+# usages
+# payload = OrganizationDataFactory.generate_organization_data()
+# payload = OrganizationDataFactory.generate_organization_data({"website": invalid_website}) #overrides the website field
+
+
 class NumVerifyAPI:
     def __init__(self, base_url, api_key):
         self.base_url = base_url
