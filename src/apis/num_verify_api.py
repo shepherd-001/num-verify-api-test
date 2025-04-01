@@ -10,33 +10,36 @@ import requests
 # from config.projectConfiguration import logger, base_url
 #
 #
+#
 # class APIError(Exception):
 #     """Custom exception for API request errors."""
 #     pass
 #
 #
 # class APIClient:
-#     def __init__(self, auth_token: Optional[str] = None, session: Optional[requests.Session] = None):
+#     def __init__(self, base_client_url: Optional[str] = None, auth_token: Optional[str] = None):
 #
-#         self.base_url = base_url.rstrip("/")
+#         self.base_url = base_url.rstrip("/") or base_client_url.rstrip("/")
 #         self.auth_token = auth_token
-#         self.session = session or requests.Session()
-#         self.default_headers = {'Content-Type': "application/json"}
-#
-#         if self.auth_token:
-#             self.default_headers["Authorization"] = f"Bearer {self.auth_token}"
+#         self.session = requests.Session()
+#         self.default_headers = {
+#             'Content-Type': "application/json",
+#             **({'Authorization': f"Bearer {auth_token}"} if auth_token else {})
+#         }
 #
 #     def set_auth_token(self, auth_token: str) -> None:
-#         """Updates the authentication token dynamically."""
+#         """Dynamically updates the authentication token."""
 #         self.auth_token = auth_token
 #         self.default_headers["Authorization"] = f"Bearer {auth_token}"
+#         if self.auth_token:
+#             self.default_headers["Authorization"] = f"Bearer {self.auth_token}"
 #
 #     def _send_request(
 #             self, method: str, endpoint: str,
 #             payload: Optional[Dict[str, Any]] = None,
 #             params: Optional[Dict[str, Any]] = None,
 #             auth_token: Optional[str] = None,
-#             extra_headers: Optional[Dict[str, str]] = None
+#             extra_headers: Optional[Dict[str, str]] = None,
 #     ) -> requests.Response:
 #         """
 #         Sends an HTTP request with support for JSON payload or query parameters.
@@ -50,13 +53,15 @@ import requests
 #         :return: Response object.
 #         :raises APIError: If a network error occurs or the request fails.
 #         """
-#         headers = {**self.default_headers, **(extra_headers or {})}
+#         headers = self.default_headers.copy()
+#         if extra_headers:
+#             headers.update(extra_headers)
 #
 #         token = auth_token or self.auth_token
 #         if token:
 #             headers["Authorization"] = f"Bearer {token}"
 #
-#         url = urljoin(self.base_url + "/", endpoint.lstrip("/"))
+#         url = f"{self.base_url}/{endpoint.lstrip('/')}"
 #
 #         try:
 #             response = self.session.request(method, url, json=payload, params=params, headers=headers)
